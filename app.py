@@ -185,5 +185,23 @@ def delete_review(review_id):
 @app.route('/alive')
 def alive():
     return "Vivo: true", 200
+import requests
+import time
+import threading
+from datetime import datetime
+
+def ping():
+    while True:
+        try:
+            res = requests.get('http://tu-servidor/alive')
+            print(f"[{datetime.now().isoformat()}] {res.text}")
+        except Exception as e:
+            print(f"[{datetime.now().isoformat()}] Error: {e}")
+        time.sleep(30)
+
+
+# tu código sigue aquí sin bloquearse
 if __name__ == '__main__':
+    threading.Thread(target=ping, daemon=True).start()
+
     app.run(debug=True, host='0.0.0.0', port=8080)
