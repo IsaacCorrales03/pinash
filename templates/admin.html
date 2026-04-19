@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}Admin — El Closet de Pinash{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="admin-header">
+  <div class="admin-header-inner">
+    <div>
+      <p class="admin-eyebrow">Panel</p>
+      <h1 class="admin-title">Administración</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+      <button class="btn-admin-new" onclick="openModal('modal-new')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 4.5v15m7.5-7.5h-15"/>
+        </svg>
+        Nuevo producto
+      </button>
+      <a href="/admin/logout"
+         style="font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-decoration:underline;text-underline-offset:3px;white-space:nowrap">
+        Cerrar sesión
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="admin-stats">
+  <div class="stat-card">
+    <p class="stat-label">Total productos</p>
+    <p class="stat-value">{{ products|length }}</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Nuevos</p>
+    <p class="stat-value accent-magenta">{{ products|selectattr('badge','equalto','Nuevo')|list|length }}</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">En oferta</p>
+    <p class="stat-value accent-mint">{{ products|selectattr('badge','equalto','Oferta')|list|length }}</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Agotados</p>
+    <p class="stat-value accent-muted">{{ products|selectattr('badge','equalto','Agotado')|list|length }}</p>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="admin-table-wrap">
+  <div class="admin-table-card">
+    {% if products %}
+    <div class="admin-table-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:52px">Img</th>
+            <th>Nombre</th>
+            <th class="col-desc">Descripción</th>
+            <th>Precio</th>
+            <th>Etiqueta</th>
+            <th class="col-stock">Stock</th>
+            <th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in products %}
+          <tr>
+            <td>
+              {% if p.image %}
+                <img src="/static/{{ p.image }}" class="admin-thumb" alt="{{ p.name }}">
+              {% else %}
+                <div class="admin-thumb-placeholder">
+                  <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/>
+                  </svg>
+                </div>
+              {% endif %}
+            </td>
+            <td class="admin-name">{{ p.name }}</td>
+            <td class="admin-desc col-desc">{{ p.description }}</td>
+            <td class="admin-price">₡{{ "%.0f"|format(p.price) }}</td>
+            <td>
+              {% if p.badge %}
+                <span class="badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>
+              {% else %}
+                <span style="color:var(--muted);font-size:.75rem">—</span>
+              {% endif %}
+            </td>
+            <td class="col-stock" style="color:var(--muted)">{{ p.stock }}</td>
+            <td>
+              <div class="admin-actions">
+                <button class="btn-icon btn-icon-edit" onclick="openEdit({{ p.id }}, {{ p|tojson }})" title="Editar">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+                  </svg>
+                </button>
+                <form method="POST" action="/admin/productos/{{ p.id }}/eliminar" style="display:contents"
+                  onsubmit="return confirm('¿Eliminar «{{ p.name }}»?')">
+                  <button type="submit" class="btn-icon btn-icon-del" title="Eliminar">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <div class="admin-empty">
+      <p class="admin-empty-title">Sin productos todavía</p>
+      <p class="admin-empty-sub">Añadí el primero con el botón de arriba.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+
+<!-- MODAL: NUEVO -->
+<div id="modal-new" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">Nuevo producto</h2>
+      <button class="modal-close" onclick="closeModal('modal-new')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <form method="POST" action="/admin/productos/nuevo" enctype="multipart/form-data">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre *</label>
+          <input name="name" required placeholder="Nombre del producto" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea name="description" rows="3" placeholder="Descripción..." class="form-textarea form-input"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Precio *</label>
+            <input name="price" type="number" step="0.01" min="0" required placeholder="0.00" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock</label>
+            <input name="stock" type="number" min="0" value="0" class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Etiqueta</label>
+          <select name="badge" class="form-select form-input">
+            <option value="">Sin etiqueta</option>
+            <option value="Nuevo">Nuevo</option>
+            <option value="Oferta">Oferta</option>
+            <option value="Agotado">Agotado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Imagen</label>
+          <input name="image" type="file" accept="image/*" class="form-file">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn-save">Guardar producto</button>
+        <button type="button" class="btn-cancel" onclick="closeModal('modal-new')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- MODAL: EDITAR -->
+<div id="modal-edit" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">Editar producto</h2>
+      <button class="modal-close" onclick="closeModal('modal-edit')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <form id="form-edit" method="POST" enctype="multipart/form-data">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre *</label>
+          <input id="edit-name" name="name" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea id="edit-description" name="description" rows="3" class="form-textarea form-input"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Precio *</label>
+            <input id="edit-price" name="price" type="number" step="0.01" min="0" required class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock</label>
+            <input id="edit-stock" name="stock" type="number" min="0" class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Etiqueta</label>
+          <select id="edit-badge" name="badge" class="form-select form-input">
+            <option value="">Sin etiqueta</option>
+            <option value="Nuevo">Nuevo</option>
+            <option value="Oferta">Oferta</option>
+            <option value="Agotado">Agotado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Imagen (vacío = mantener actual)</label>
+          <input name="image" type="file" accept="image/*" class="form-file">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn-save">Guardar cambios</button>
+        <button type="button" class="btn-cancel" onclick="closeModal('modal-edit')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+  });
+  function openEdit(id, product) {
+    document.getElementById('form-edit').action = `/admin/productos/${id}/editar`;
+    document.getElementById('edit-name').value        = product.name        || '';
+    document.getElementById('edit-description').value = product.description || '';
+    document.getElementById('edit-price').value       = product.price       || '';
+    document.getElementById('edit-stock').value       = product.stock       || 0;
+    document.getElementById('edit-badge').value       = product.badge       || '';
+    openModal('modal-edit');
+  }
+</script>
+
+{% endblock %}

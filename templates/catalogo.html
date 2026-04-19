@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Catálogo — El Closet de Pinash{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="catalog-header">
+  <div class="catalog-deco"></div>
+  <div class="catalog-header-inner">
+    <p class="hero-eyebrow">Todo lo que necesitas</p>
+    <h1 class="hero-title" style="font-size:clamp(2rem,7vw,3rem);margin-bottom:2.5rem">
+      Catálogo <em>completo</em>
+    </h1>
+  </div>
+  <svg viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin-bottom:-2px">
+    <path d="M0 25 C360 50 720 0 1080 25 C1260 38 1380 12 1440 25 L1440 50 L0 50Z" fill="#faf8fe"/>
+  </svg>
+</div>
+
+<!-- GRID -->
+<section class="catalog-section">
+
+  {% if products %}
+  <p class="catalog-count">
+    {{ products|length }} producto{% if products|length != 1 %}s{% endif %} disponibles
+  </p>
+
+  <div class="catalog-grid">
+    {% for p in products %}
+    <div class="catalog-card">
+
+      <div class="catalog-thumb">
+        {% if p.image %}
+          <img src="/static/{{ p.image }}" alt="{{ p.name }}" loading="lazy">
+        {% else %}
+          <div class="catalog-thumb-placeholder">
+            <svg fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
+              <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M13.5 12h.008"/>
+            </svg>
+          </div>
+        {% endif %}
+        {% if p.badge %}
+          <span class="badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>
+        {% endif %}
+      </div>
+
+      <div class="catalog-body">
+        <h3 class="catalog-name">{{ p.name }}</h3>
+        <p class="catalog-desc">{{ p.description }}</p>
+        <div class="catalog-footer">
+          <span class="catalog-price">₡{{ "%.0f"|format(p.price) }}</span>
+          {% if p.badge == 'Agotado' %}
+            <span class="sold-out-label">Sin stock</span>
+          {% else %}
+            <a href="https://wa.me/50685045055?text=Hola!%20Me%20interesa%20{{ p.name|urlencode }}"
+               target="_blank" rel="noopener" class="btn-consultar">
+              Consultar
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="catalog-empty">
+    <div class="catalog-empty-icon">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+      </svg>
+    </div>
+    <p class="catalog-empty-title">El catálogo está vacío</p>
+    <p class="catalog-empty-sub">Los productos aparecerán aquí en cuanto estén disponibles.</p>
+  </div>
+  {% endif %}
+
+</section>
+
+{% endblock %}

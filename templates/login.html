@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Admin — Iniciar sesión{% endblock %}
+
+{% block content %}
+
+<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem">
+  <div style="width:100%;max-width:360px">
+
+    <!-- logo / title -->
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+        <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="color:#fff">
+          <path d="M12 2a5 5 0 015 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 015-5zm0 3a2 2 0 100 4 2 2 0 000-4z"/>
+        </svg>
+      </div>
+      <p style="font-family:var(--font-display);font-size:1.4rem;font-weight:300;color:var(--ink)">
+        El Closet de <span style="color:var(--magenta)">Pinash</span>
+      </p>
+      <p style="font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.25rem">
+        Panel de administración
+      </p>
+    </div>
+
+    <!-- card -->
+    <div style="background:#fff;border:1px solid rgba(93,52,195,.1);border-radius:var(--radius-lg);padding:2rem">
+
+      {% if error %}
+      <div style="background:#fff0f3;border:1px solid rgba(220,0,80,.2);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.82rem;color:#c00050">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/admin/login">
+        <div class="form-group" style="margin-bottom:1.25rem">
+          <label class="form-label">Contraseña</label>
+          <input
+            name="password"
+            type="password"
+            required
+            autofocus
+            placeholder="••••••••"
+            class="form-input"
+            style="letter-spacing:.15em"
+          >
+        </div>
+        <button type="submit" class="btn-save" style="width:100%">
+          Entrar
+        </button>
+      </form>
+
+    </div>
+
+    <p style="text-align:center;margin-top:1.25rem;font-size:.75rem;color:var(--muted)">
+      <a href="/" style="color:var(--muted);text-decoration:underline;text-underline-offset:3px">
+        ← Volver al inicio
+      </a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
