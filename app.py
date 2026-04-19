@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import os
 from database import database
 from dotenv import load_dotenv
-load_dotenv()  # ← primero que todo
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
@@ -10,7 +10,7 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
-print(ADMIN_PASSWORD)
+
 # ─── AUTH ─────────────────────────────────────────────────────────────────────
 
 def admin_required(f):
@@ -44,20 +44,68 @@ def logout():
 
 @app.route('/')
 def index():
-    recent = database.query(
-        "SELECT id, name, description, price, image, badge FROM products ORDER BY id DESC LIMIT 5"
-    )
-    return render_template('index.html', products=recent)
+    recent  = database.get_recent_products(limit=5)
+    reviews = database.get_recent_reviews(limit=10)
+    stats   = database.get_reviews_stats()
+    return render_template('index.html', products=recent, reviews=reviews, stats=stats)
 
 
 # ─── CATALOGUE ────────────────────────────────────────────────────────────────
 
 @app.route('/catalogo')
 def catalogue():
-    products = database.query(
-        "SELECT id, name, description, price, image, badge FROM products ORDER BY id DESC"
-    )
+    products = database.get_all_products()
     return render_template('catalogo.html', products=products)
+
+
+# ─── RESEÑAS ──────────────────────────────────────────────────────────────────
+
+@app.route('/resenas', methods=['GET'])
+def get_reviews():
+    """Devuelve las últimas 10 reseñas como JSON."""
+    reviews = database.get_recent_reviews(limit=10)
+    # datetime no es serializable por defecto
+    for r in reviews:
+        if r.get('created_at'):
+            r['created_at'] = r['created_at'].strftime('%d %b %Y')
+    return jsonify(reviews)
+
+
+@app.route('/resenas', methods=['POST'])
+def create_review():
+    """
+    Acepta JSON  { author, rating, body }
+    o form-data con los mismos campos.
+    Devuelve JSON con la reseña creada o el error.
+    """
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form
+
+    author = str(data.get('author', '')).strip()
+    body   = str(data.get('body', '')).strip()
+    try:
+        rating = int(data.get('rating', 0))
+    except (ValueError, TypeError):
+        rating = 0
+
+    # ── validaciones básicas ──────────────────────────────────────────────────
+    errors = {}
+    if not author:
+        errors['author'] = 'El nombre es requerido.'
+    elif len(author) > 120:
+        errors['author'] = 'El nombre no puede superar 120 caracteres.'
+    if not body:
+        errors['body'] = 'El comentario es requerido.'
+    if rating not in range(1, 6):
+        errors['rating'] = 'La calificación debe ser entre 1 y 5.'
+
+    if errors:
+        return jsonify({'ok': False, 'errors': errors}), 422
+
+    database.create_review(author=author, rating=rating, body=body)
+    return jsonify({'ok': True, 'message': '¡Gracias por tu reseña!'}), 201
 
 
 # ─── ADMIN: LIST ──────────────────────────────────────────────────────────────
@@ -65,9 +113,7 @@ def catalogue():
 @app.route('/admin')
 @admin_required
 def admin():
-    products = database.query(
-        "SELECT id, name, description, price, image, badge, stock FROM products ORDER BY id DESC"
-    )
+    products = database.get_all_products_admin()
     return render_template('admin.html', products=products)
 
 
@@ -90,10 +136,7 @@ def create_product():
         image_path = f"uploads/{filename}"
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    database.query(
-        "INSERT INTO products (name, description, price, badge, stock, image) VALUES (?, ?, ?, ?, ?, ?)",
-        (name, description, float(price), badge, int(stock), image_path)
-    )
+    database.create_product(name, description, float(price), badge, int(stock), image_path)
     return redirect(url_for('admin'))
 
 
@@ -108,7 +151,7 @@ def edit_product(product_id):
     badge       = request.form.get('badge', '')
     stock       = request.form.get('stock', '0')
 
-    row = database.query("SELECT image FROM products WHERE id = ?", (product_id,))
+    row = database.get_product_image(product_id)
     image_path = row[0]['image'] if row else ''
 
     file = request.files.get('image')
@@ -118,19 +161,25 @@ def edit_product(product_id):
         image_path = f"uploads/{filename}"
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    database.query(
-        "UPDATE products SET name=?, description=?, price=?, badge=?, stock=?, image=? WHERE id=?",
-        (name, description, float(price), badge, int(stock), image_path, product_id)
-    )
+    database.update_product(product_id, name, description, float(price), badge, int(stock), image_path)
     return redirect(url_for('admin'))
 
 
-# ─── ADMIN: DELETE ────────────────────────────────────────────────────────────
+# ─── ADMIN: DELETE PRODUCT ────────────────────────────────────────────────────
 
 @app.route('/admin/productos/<int:product_id>/eliminar', methods=['POST'])
 @admin_required
 def delete_product(product_id):
-    database.query("DELETE FROM products WHERE id = ?", (product_id,))
+    database.delete_product(product_id)
+    return redirect(url_for('admin'))
+
+
+# ─── ADMIN: DELETE REVIEW ─────────────────────────────────────────────────────
+
+@app.route('/admin/resenas/<int:review_id>/eliminar', methods=['POST'])
+@admin_required
+def delete_review(review_id):
+    database.delete_review(review_id)
     return redirect(url_for('admin'))
 
 

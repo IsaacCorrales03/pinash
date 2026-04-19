@@ -1467,3 +1467,240 @@ body {
   .catalog-price { font-size: 1.2rem; }
   .catalog-thumb { padding-top: 128%; }
 }
+/* ══════════════════════════════════════════════
+   ── REVIEWS SECTION
+   Añadir al final de styles.css
+   ══════════════════════════════════════════════ */
+
+.reviews-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 2rem;
+}
+
+/* ── Encabezado ── */
+.reviews-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.reviews-stat-badge {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--pale);
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(93,52,195,.12);
+}
+
+.reviews-stat-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #f5a623;
+}
+
+.reviews-stat-avg {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.reviews-stat-total {
+  font-size: .78rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* ── Grid de tarjetas ── */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (min-width: 560px) {
+  .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 860px) {
+  .reviews-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Tarjeta individual ── */
+.review-card {
+  background: #fff;
+  border: 1px solid rgba(93,52,195,.1);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
+}
+
+.review-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Animación de entrada para tarjeta recién añadida por JS */
+@keyframes review-pop {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.review-card--new { animation: review-pop .4s ease forwards; }
+
+/* Estrellas de la tarjeta */
+.review-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #f5a623;
+}
+
+/* Texto */
+.review-body {
+  font-size: .85rem;
+  line-height: 1.7;
+  color: var(--ink-3);
+  flex: 1;
+}
+
+/* Footer: avatar + nombre + fecha */
+.review-footer {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding-top: .65rem;
+  border-top: 1px solid rgba(93,52,195,.07);
+}
+
+.review-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--grad-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.review-author {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.review-date {
+  font-size: .7rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* Estado vacío */
+.reviews-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  font-size: .92rem;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+/* ── Formulario ── */
+.review-form-wrap {
+  background: #fff;
+  border: 1px solid rgba(93,52,195,.12);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.5rem 2rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.review-form-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 300;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Star picker ── */
+.star-picker {
+  display: flex;
+  gap: .25rem;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #f5a623;
+  line-height: 0;
+  transition: transform .15s;
+}
+
+.star-btn:hover,
+.star-btn.active { transform: scale(1.2); }
+
+.review-rating-hint {
+  font-size: .75rem;
+  color: var(--muted);
+  margin-top: .3rem;
+  font-weight: 300;
+  min-height: 1.1em;
+}
+
+/* Errores de campo */
+.review-field-err {
+  font-size: .72rem;
+  color: #e05;
+  margin-top: .2rem;
+}
+
+/* Mensajes globales de resultado */
+.review-msg {
+  border-radius: var(--radius-sm);
+  padding: .75rem 1rem;
+  font-size: .82rem;
+  font-weight: 400;
+  margin-bottom: .75rem;
+}
+
+.review-msg--ok {
+  background: #e6f9f0;
+  color: #1a7a4a;
+  border: 1px solid #a3e4c1;
+}
+
+.review-msg--err {
+  background: #fff0f3;
+  color: #c0002a;
+  border: 1px solid #f5b8c4;
+}
+
+/* Botón de submit */
+.btn-submit-review {
+  align-self: flex-start;
+  margin-top: .25rem;
+}

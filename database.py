@@ -62,7 +62,7 @@ class DataBase:
 
     # ── setup ─────────────────────────────────────────────────────────────────
 
-    def create_table(self):
+    def create_tables(self):
         self.query("""
             CREATE TABLE IF NOT EXISTS products (
                 id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,6 +74,19 @@ class DataBase:
                 image       VARCHAR(500)    DEFAULT ''
             )
         """)
+        self.query("""
+            CREATE TABLE IF NOT EXISTS reviews (
+                id          INT AUTO_INCREMENT PRIMARY KEY,
+                author      VARCHAR(120)    NOT NULL,
+                rating      TINYINT         NOT NULL CHECK (rating BETWEEN 1 AND 5),
+                body        TEXT            NOT NULL,
+                created_at  DATETIME        DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+    # ── alias para compatibilidad con código viejo ─────────────────────────────
+    def create_table(self):
+        self.create_tables()
 
     # ── productos ─────────────────────────────────────────────────────────────
 
@@ -123,7 +136,35 @@ class DataBase:
             (product_id,)
         )
 
+    # ── reseñas ───────────────────────────────────────────────────────────────
+
+    def get_recent_reviews(self, limit: int = 10) -> list[dict]:
+        return self.query(
+            "SELECT id, author, rating, body, created_at "
+            "FROM reviews ORDER BY created_at DESC LIMIT %s",
+            (limit,)
+        )
+
+    def create_review(self, author: str, rating: int, body: str) -> list[dict]:
+        return self.query(
+            "INSERT INTO reviews (author, rating, body) VALUES (%s, %s, %s)",
+            (author, int(rating), body)
+        )
+
+    def get_reviews_stats(self) -> dict:
+        """Devuelve promedio y total de reseñas."""
+        rows = self.query(
+            "SELECT COUNT(*) AS total, ROUND(AVG(rating), 1) AS avg_rating FROM reviews"
+        )
+        return rows[0] if rows else {"total": 0, "avg_rating": 0}
+
+    def delete_review(self, review_id: int) -> list[dict]:
+        return self.query(
+            "DELETE FROM reviews WHERE id = %s",
+            (review_id,)
+        )
+
 
 # singleton global
 database = DataBase()
-database.create_table()
+database.create_tables()

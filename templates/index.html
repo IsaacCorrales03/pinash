@@ -109,6 +109,120 @@
 </section>
 
 
+<!-- ══════════════════════════════════════════════
+     SECCIÓN DE RESEÑAS
+     ══════════════════════════════════════════════ -->
+<section id="resenas" class="reviews-section">
+
+  <!-- Encabezado + estadística global -->
+  <div class="reviews-header">
+    <div>
+      <p class="section-eyebrow">Lo que dicen</p>
+      <h2 class="section-title">Reseñas <span class="gradient-text">de clientas</span></h2>
+    </div>
+
+    {% if stats.total > 0 %}
+    <div class="reviews-stat-badge">
+      <span class="reviews-stat-stars">
+        {% for i in range(1, 6) %}
+          {% if i <= stats.avg_rating|round|int %}
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          {% else %}
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          {% endif %}
+        {% endfor %}
+      </span>
+      <span class="reviews-stat-avg">{{ stats.avg_rating }}</span>
+      <span class="reviews-stat-total">/ 5 · {{ stats.total }} reseña{% if stats.total != 1 %}s{% endif %}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Grid de reseñas -->
+  {% if reviews %}
+  <div class="reviews-grid" id="reviews-grid">
+    {% for r in reviews %}
+    <article class="review-card">
+      <!-- Estrellas -->
+      <div class="review-stars">
+        {% for i in range(1, 6) %}
+          {% if i <= r.rating %}
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          {% else %}
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <!-- Texto -->
+      <p class="review-body">{{ r.body }}</p>
+      <!-- Autor + fecha -->
+      <footer class="review-footer">
+        <span class="review-avatar">{{ r.author[0]|upper }}</span>
+        <div>
+          <p class="review-author">{{ r.author }}</p>
+          <p class="review-date">{{ r.created_at.strftime('%d %b %Y') }}</p>
+        </div>
+      </footer>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="reviews-empty">
+    <p>Sé la primera en dejar una reseña 🌟</p>
+  </div>
+  {% endif %}
+
+  <!-- Formulario para nueva reseña -->
+  <div class="review-form-wrap">
+    <h3 class="review-form-title">Dejá tu reseña</h3>
+
+    <!-- Mensaje de éxito / error (oculto por defecto) -->
+    <div class="review-msg review-msg--ok"  id="review-ok"  style="display:none">
+      ✓ ¡Gracias por tu reseña! Ya aparece en la página.
+    </div>
+    <div class="review-msg review-msg--err" id="review-err" style="display:none">
+      Hubo un error. Revisá los campos e intentá de nuevo.
+    </div>
+
+    <div class="review-form" id="review-form">
+
+      <!-- Selector de estrellas interactivo -->
+      <div class="form-group">
+        <label class="form-label">Tu calificación</label>
+        <div class="star-picker" id="star-picker" role="group" aria-label="Calificación de 1 a 5 estrellas">
+          {% for i in range(1, 6) %}
+          <button type="button" class="star-btn" data-value="{{ i }}" aria-label="{{ i }} estrella{% if i > 1 %}s{% endif %}">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </button>
+          {% endfor %}
+        </div>
+        <input type="hidden" id="rating-value" value="0">
+        <p class="review-rating-hint" id="rating-hint">Seleccioná una calificación</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="review-author">Tu nombre</label>
+        <input class="form-input" type="text" id="review-author" placeholder="Ej: María G." maxlength="120" autocomplete="name">
+        <p class="review-field-err" id="err-author" style="display:none"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="review-body">Tu comentario</label>
+        <textarea class="form-textarea" id="review-body" rows="4" placeholder="Contanos tu experiencia con El Closet de Pinash…"></textarea>
+        <p class="review-field-err" id="err-body" style="display:none"></p>
+      </div>
+
+      <button class="btn-primary btn-submit-review" id="btn-submit-review" type="button">
+        Publicar reseña
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+
 <!-- CONTACTO -->
 <section id="contacto" class="contact-section">
   <div style="text-align:center;margin-bottom:2rem">
@@ -128,5 +242,167 @@
     </a>
   </div>
 </section>
+
+
+<!-- ══════════════════════════════════════════════
+     JS — Star picker + envío de reseña
+     ══════════════════════════════════════════════ -->
+<script>
+(function () {
+  const LABELS = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', '¡Excelente!'];
+
+  const picker     = document.getElementById('star-picker');
+  const ratingInput= document.getElementById('rating-value');
+  const ratingHint = document.getElementById('rating-hint');
+  const stars      = picker ? picker.querySelectorAll('.star-btn') : [];
+  let   selected   = 0;
+
+  function paintStars(upTo) {
+    stars.forEach((btn, idx) => {
+      const svg = btn.querySelector('svg');
+      if (idx < upTo) {
+        svg.setAttribute('fill', 'currentColor');
+        svg.setAttribute('stroke', 'none');
+        btn.classList.add('active');
+      } else {
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  stars.forEach(btn => {
+    btn.addEventListener('mouseenter', () => paintStars(+btn.dataset.value));
+    btn.addEventListener('mouseleave', () => paintStars(selected));
+    btn.addEventListener('click', () => {
+      selected = +btn.dataset.value;
+      ratingInput.value = selected;
+      ratingHint.textContent = LABELS[selected];
+      ratingHint.style.color = selected > 0 ? 'var(--magenta)' : '';
+      paintStars(selected);
+    });
+  });
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  const btnSubmit = document.getElementById('btn-submit-review');
+  const okMsg     = document.getElementById('review-ok');
+  const errMsg    = document.getElementById('review-err');
+
+  function clearErrors() {
+    ['author', 'body'].forEach(f => {
+      const el = document.getElementById('err-' + f);
+      if (el) { el.textContent = ''; el.style.display = 'none'; }
+    });
+    okMsg.style.display  = 'none';
+    errMsg.style.display = 'none';
+  }
+
+  function showFieldError(field, msg) {
+    const el = document.getElementById('err-' + field);
+    if (el) { el.textContent = msg; el.style.display = 'block'; }
+  }
+
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', async () => {
+      clearErrors();
+
+      const author = document.getElementById('review-author').value.trim();
+      const body   = document.getElementById('review-body').value.trim();
+      const rating = parseInt(ratingInput.value, 10);
+
+      // Validación frontend liviana
+      let hasError = false;
+      if (!author) { showFieldError('author', 'El nombre es requerido.'); hasError = true; }
+      if (!body)   { showFieldError('body',   'El comentario es requerido.'); hasError = true; }
+      if (rating < 1 || rating > 5) {
+        ratingHint.textContent = 'Seleccioná una calificación';
+        ratingHint.style.color = '#e05';
+        hasError = true;
+      }
+      if (hasError) return;
+
+      btnSubmit.disabled   = true;
+      btnSubmit.textContent = 'Enviando…';
+
+      try {
+        const res = await fetch('/resenas', {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ author, rating, body }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.ok) {
+          okMsg.style.display = 'block';
+          // Limpiar formulario
+          document.getElementById('review-author').value = '';
+          document.getElementById('review-body').value   = '';
+          ratingInput.value = 0;
+          selected = 0;
+          paintStars(0);
+          ratingHint.textContent = 'Seleccioná una calificación';
+          ratingHint.style.color = '';
+          // Insertar tarjeta nueva al inicio del grid
+          insertReviewCard({ author, rating, body, created_at: 'Ahora mismo' });
+        } else {
+          errMsg.style.display = 'block';
+          if (data.errors) {
+            Object.entries(data.errors).forEach(([f, m]) => showFieldError(f, m));
+          }
+        }
+      } catch (_) {
+        errMsg.style.display = 'block';
+      } finally {
+        btnSubmit.disabled    = false;
+        btnSubmit.textContent = 'Publicar reseña';
+        btnSubmit.innerHTML  += ' <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      }
+    });
+  }
+
+  function starsSVG(rating) {
+    return Array.from({ length: 5 }, (_, i) => {
+      const filled = i < rating;
+      return filled
+        ? `<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+        : `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    }).join('');
+  }
+
+  function insertReviewCard(r) {
+    let grid = document.getElementById('reviews-grid');
+    if (!grid) {
+      // Si no había reseñas, crear el grid
+      const empty = document.querySelector('.reviews-empty');
+      if (empty) empty.remove();
+      grid = document.createElement('div');
+      grid.className = 'reviews-grid';
+      grid.id = 'reviews-grid';
+      const formWrap = document.querySelector('.review-form-wrap');
+      formWrap.parentNode.insertBefore(grid, formWrap);
+    }
+    const card = document.createElement('article');
+    card.className = 'review-card review-card--new';
+    card.innerHTML = `
+      <div class="review-stars">${starsSVG(r.rating)}</div>
+      <p class="review-body">${escapeHtml(r.body)}</p>
+      <footer class="review-footer">
+        <span class="review-avatar">${escapeHtml(r.author[0].toUpperCase())}</span>
+        <div>
+          <p class="review-author">${escapeHtml(r.author)}</p>
+          <p class="review-date">${r.created_at}</p>
+        </div>
+      </footer>`;
+    grid.prepend(card);
+    // Quitar clase de animación después de un momento
+    setTimeout(() => card.classList.remove('review-card--new'), 600);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>
 
 {% endblock %}
