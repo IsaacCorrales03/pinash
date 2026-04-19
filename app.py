@@ -193,7 +193,7 @@ from datetime import datetime
 def ping():
     while True:
         try:
-            res = requests.get('http://tu-servidor/alive')
+            res = requests.get('https://pinash.onrender.com/alive')
             print(f"[{datetime.now().isoformat()}] {res.text}")
         except Exception as e:
             print(f"[{datetime.now().isoformat()}] Error: {e}")
