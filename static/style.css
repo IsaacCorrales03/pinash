@@ -449,7 +449,7 @@ body {
 
 .link-subtle:hover { color: var(--magenta-d); }
 
-/* ── PRODUCT CARDS ── */
+/* ── PRODUCT CARDS (home page) ── */
 .products-section {
   max-width: 1100px;
   margin: 0 auto;
@@ -775,7 +775,7 @@ body {
 /* ── ADMIN TABLE (kept minimal) ── */
 .admin-row:hover td { background: var(--pale); }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE (home / general) ── */
 @media (min-width: 480px) {
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1198,7 +1198,10 @@ body {
 
 .btn-cancel:hover { background: var(--pale); color: var(--indigo); }
 
-/* ── CATALOG PAGE ── */
+/* ══════════════════════════════════════════════
+   ── CATALOG PAGE (rediseñado — cartas grandes)
+   ══════════════════════════════════════════════ */
+
 .catalog-header {
   background: var(--grad-hero);
   position: relative;
@@ -1207,7 +1210,7 @@ body {
 }
 
 .catalog-header-inner {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -1224,42 +1227,51 @@ body {
   pointer-events: none;
 }
 
+/* Wrapper principal del catálogo — más ancho */
 .catalog-section {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2.5rem 1.25rem 4rem;
+  padding: 2.5rem 1rem 5rem;
 }
 
 .catalog-count {
-  font-size: .8rem;
+  font-size: .95rem;
   color: var(--muted);
-  margin-bottom: 1.5rem;
-  font-weight: 300;
+  margin-bottom: 2rem;
+  font-weight: 400;
 }
 
+/* ── Grid base: 1 columna en móvil, crece con breakpoints ── */
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
 
+/* ── CARTA GRANDE ── */
 .catalog-card {
   background: #fff;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(93,52,195,.09);
+  border: 1px solid rgba(93,52,195,.12);
   display: flex;
   flex-direction: column;
-  transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s;
+  box-shadow: var(--shadow-sm);
 }
 
-.catalog-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.catalog-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
 
+/* Imagen: relación de aspecto portrait generosa */
 .catalog-thumb {
   position: relative;
   width: 100%;
-  padding-top: 110%;
+  padding-top: 130%;   /* más alto que antes, ropa se ve mejor en portrait */
   overflow: hidden;
+  background: linear-gradient(135deg, var(--pale) 0%, #e6f4ff 100%);
 }
 
 .catalog-thumb img {
@@ -1268,10 +1280,10 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform .4s ease;
+  transition: transform .45s ease;
 }
 
-.catalog-card:hover .catalog-thumb img { transform: scale(1.04); }
+.catalog-card:hover .catalog-thumb img { transform: scale(1.06); }
 
 .catalog-thumb-placeholder {
   position: absolute;
@@ -1282,108 +1294,176 @@ body {
   background: linear-gradient(135deg, var(--pale), #e6f4ff);
 }
 
-.catalog-thumb-placeholder svg { width: 36px; height: 36px; color: var(--lavender); opacity: .5; }
+.catalog-thumb-placeholder svg {
+  width: 52px;
+  height: 52px;
+  color: var(--lavender);
+  opacity: .45;
+}
 
+/* Badge sobre la imagen */
+.catalog-thumb .badge {
+  top: 12px;
+  left: 12px;
+  font-size: .68rem;
+  padding: .3rem .75rem;
+}
+
+/* ── Cuerpo de la carta: tipografía grande y bold ── */
 .catalog-body {
-  padding: .85rem 1rem 1rem;
+  padding: 1.1rem 1.2rem 1.25rem;
   display: flex;
   flex-direction: column;
   flex: 1;
+  gap: .5rem;
 }
 
 .catalog-name {
   font-family: var(--font-display);
-  font-size: .95rem;
+  font-size: 1.35rem;          /* subido de .95rem → 1.35rem */
+  font-weight: 700;            /* bold en lugar de normal */
   line-height: 1.2;
-  margin-bottom: .3rem;
   color: var(--ink);
+  letter-spacing: .01em;
 }
 
 .catalog-desc {
-  font-size: .72rem;
-  line-height: 1.6;
+  font-size: .88rem;           /* subido de .72rem */
+  font-weight: 400;
+  line-height: 1.65;
   color: var(--muted);
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: .75rem;
+  margin-bottom: .25rem;
 }
 
+/* Footer de la carta */
 .catalog-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: .5rem;
-  padding-top: .75rem;
-  border-top: 1px solid rgba(93,52,195,.07);
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid rgba(93,52,195,.08);
+  margin-top: auto;
 }
 
 .catalog-price {
-  font-size: .92rem;
-  font-weight: 500;
+  font-size: 1.2rem;           /* subido de .92rem */
+  font-weight: 700;            /* bold */
   color: var(--magenta);
+  letter-spacing: -.01em;
 }
 
 .btn-consultar {
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .06em;
-  padding: .4rem .85rem;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  padding: .55rem 1.1rem;
   border-radius: 999px;
   background: var(--indigo);
   color: #fff;
   border: none;
   cursor: pointer;
-  transition: background .2s;
+  transition: background .2s, transform .15s;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.btn-consultar:hover { background: var(--magenta); }
+.btn-consultar:hover {
+  background: var(--magenta);
+  transform: translateY(-1px);
+}
 
 .sold-out-label {
-  font-size: .65rem;
-  font-weight: 500;
+  font-size: .72rem;
+  font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
+/* ── Estado vacío ── */
 .catalog-empty {
   text-align: center;
   padding: 5rem 1rem;
+  grid-column: 1 / -1;
 }
 
 .catalog-empty-icon {
-  width: 60px;
-  height: 60px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   background: var(--pale);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.25rem;
+  margin: 0 auto 1.5rem;
 }
 
-.catalog-empty-icon svg { width: 26px; height: 26px; color: var(--lavender); }
+.catalog-empty-icon svg { width: 32px; height: 32px; color: var(--lavender); }
 
 .catalog-empty-title {
   font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 300;
+  font-size: 1.6rem;
+  font-weight: 700;
   color: var(--muted);
-  margin-bottom: .4rem;
+  margin-bottom: .5rem;
 }
 
-.catalog-empty-sub { font-size: .82rem; color: var(--muted); }
-
-@media (min-width: 600px) {
-  .catalog-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.catalog-empty-sub {
+  font-size: .9rem;
+  color: var(--muted);
 }
 
+/* ── Breakpoints del catálogo ── */
+
+/* 480px+: 2 columnas compactas en móvil horizontal */
+@media (min-width: 480px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+/* 700px+: 2 columnas amplias — cartas grandes visibles */
+@media (min-width: 700px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+  }
+
+  .catalog-name { font-size: 1.5rem; }
+  .catalog-desc { font-size: .92rem; }
+  .catalog-price { font-size: 1.3rem; }
+  .catalog-thumb { padding-top: 135%; }
+  .catalog-body { padding: 1.25rem 1.4rem 1.4rem; }
+}
+
+/* 900px+: 3 columnas — punto ideal de balance tamaño/cantidad */
 @media (min-width: 900px) {
-  .catalog-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-  .catalog-thumb { padding-top: 125%; }
-  .catalog-name { font-size: 1.05rem; }
+  .catalog-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .catalog-name { font-size: 1.4rem; }
+  .catalog-desc { font-size: .9rem; }
+  .catalog-price { font-size: 1.25rem; }
+  .catalog-thumb { padding-top: 132%; }
+}
+
+/* 1200px+: 4 columnas para pantallas anchas */
+@media (min-width: 1200px) {
+  .catalog-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.75rem;
+  }
+
+  .catalog-name { font-size: 1.3rem; }
+  .catalog-price { font-size: 1.2rem; }
+  .catalog-thumb { padding-top: 128%; }
 }
