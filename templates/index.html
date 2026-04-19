@@ -108,7 +108,67 @@
   </div>
 </section>
 
+<!-- ACERCA DE NOSOTROS -->
+<section id="nosotros" class="about-section">
+  <div class="about-inner">
 
+    <!-- Columna de texto -->
+    <div class="about-copy">
+      <p class="section-eyebrow">Nuestra historia</p>
+      <h2 class="section-title">Acerca de <span class="gradient-text">nosotras</span></h2>
+      <p class="about-body">
+        El Closet de Pinash nació del amor por la moda consciente: la convicción de que
+        vestir bien no debería costar una fortuna ni pesar en el planeta. Somos un espacio
+        donde cada prenda tiene historia, carácter y un nuevo dueño que la va a amar.
+      </p>
+      <p class="about-body">
+        Seleccionamos piezas nuevas y seminuevas con criterio estético, para que construyas
+        looks únicos con distinción y sin culpa.
+      </p>
+
+      <ul class="about-pillars">
+        <li>
+          <span class="about-pillar-icon">✦</span>
+          <div>
+            <strong>Calidad curada</strong>
+            <p>Cada prenda pasa por nuestra revisión antes de llegar a vos.</p>
+          </div>
+        </li>
+        <li>
+          <span class="about-pillar-icon">✦</span>
+          <div>
+            <strong>Moda consciente</strong>
+            <p>Apostamos por el consumo responsable y la moda circular.</p>
+          </div>
+        </li>
+        <li>
+          <span class="about-pillar-icon">✦</span>
+          <div>
+            <strong>Atención cercana</strong>
+            <p>Te asesoramos por WhatsApp con gusto y sin apuro.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Columna decorativa -->
+    <div class="about-visual">
+      <div class="about-card about-card-1">
+        <svg fill="none" stroke="currentColor" stroke-width=".8" viewBox="0 0 24 24">
+          <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+        </svg>
+      </div>
+      <div class="about-card about-card-2">
+        <svg fill="none" stroke="currentColor" stroke-width=".8" viewBox="0 0 24 24">
+          <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+        </svg>
+      </div>
+      <div class="about-card about-card-3"></div>
+      <p class="about-tagline">"Cada prenda,<br><em>una nueva historia.</em>"</p>
+    </div>
+
+  </div>
+</section>
 <!-- ══════════════════════════════════════════════
      SECCIÓN DE RESEÑAS
      ══════════════════════════════════════════════ -->
@@ -404,5 +464,11 @@
   }
 })();
 </script>
-
+<script>
+(function ping() {
+  fetch('https://pinash.onrender.com/alive', { method: 'GET', mode: 'no-cors' })
+    .catch(() => {})
+    .finally(() => setTimeout(ping, 30000));
+})();
+</script>
 {% endblock %}

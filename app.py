@@ -182,6 +182,8 @@ def delete_review(review_id):
     database.delete_review(review_id)
     return redirect(url_for('admin'))
 
-
+@app.route('/alive')
+def alive():
+    return "Vivo: true", 200
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
